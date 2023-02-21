@@ -1,12 +1,11 @@
-# Build the Go API
-FROM golang:1.18-alpine
-WORKDIR /app
+FROM golang:1.20-alpine as builder
+WORKDIR /build
+
 COPY . .
-RUN go mod download
-
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o hanlder.exe ./cmd/main.go
-
 EXPOSE 8080
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o hanlder ./cmd/main.go
 
-CMD ["./handler.exe"]
-
+FROM alpine as production
+WORKDIR /app
+COPY --from=builder /build/ ./
+CMD ["/app/handler"]
