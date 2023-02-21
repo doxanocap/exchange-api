@@ -1,7 +1,8 @@
 package main
 
 import (
-	"github.com/sirupsen/logrus"
+	"fmt"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"handler/pkg/app"
 	"handler/pkg/handlers"
@@ -11,6 +12,8 @@ import (
 )
 
 func main() {
+	fmt.Printf("QWEQWE")
+	return
 	server := app.Server{}
 	app.InitEnvironment()
 
@@ -22,11 +25,16 @@ func main() {
 		SSLMode:  viper.GetString("db.sslmode"),
 		Password: app.Public.ENV["PSQL_PASSWORD"]})
 
-	repository := repository.InitRepository(db)
-	service := services.InitServices(repository)
+	if err := postgres.Migrations(db); err != nil {
+		fmt.Printf("Migration went successfull:\nMigration file -> handler%s\n", err.Error())
+		return
+	}
+
+	repos := repository.InitRepository(db)
+	service := services.InitServices(repos)
 	handler := handlers.InitHandler(service)
 
 	if err := server.Run(app.Public.ENV["PORT"], handler.InitRoutes()); err != nil {
-		logrus.Fatalf("Error whilte running http server: %s", err.Error())
+		log.Fatalf("Error whilte running http server: %s", err.Error())
 	}
 }

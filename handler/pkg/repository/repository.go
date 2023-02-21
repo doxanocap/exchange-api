@@ -9,8 +9,11 @@ type Dispatcher interface {
 }
 
 type Parser interface {
-	UpdateExchangersTableConst(exchangers []app.Exchanger) error
-	InsertKZTCurrencies(exchangers []app.Exchanger) error
+	UpdateEInfoTableConst(eInfo []app.ExchangerInfo) error
+	UpdateEKeysTableConst(eKeys []app.ExchangerKeys) error
+	InsertKZTCurrencies(exchangers []app.ExchangerCurrencies) error
+	GetKeysById(id int) app.ExchangerKeys
+	GetKeysByName(name string) app.ExchangerKeys
 }
 
 type Request interface {

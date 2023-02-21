@@ -6,13 +6,13 @@ import (
 )
 
 type Dispatcher interface {
-	Data() app.Exchanger
+	Data() app.ParserResponse
 }
 
 type Parser interface {
 	InsertKZTCurrencies() error
-	GetAllExchangers() ([]app.Exchanger, error)
-	GetExchangersByCity(city string) ([]app.Exchanger, error)
+	GetAllExchangers() ([]app.ParserResponse, error)
+	GetExchangersByCity(city string) ([]app.ParserResponse, error)
 }
 
 type Request interface {

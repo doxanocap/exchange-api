@@ -1,1 +1,25 @@
+version: '3.9'
 
+services:
+  handler_db:
+    container_name: handler_db_postgres
+    image: postgres:14-alpine
+    environment:
+      POSTGRES_DB: exchange_api,
+      POSTGRES_USER: postgres,
+      POSTGRES_PASSWORD: "eldoseldos"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d
+    ports:
+      - 5432:5432
+    restart: always
+
+  handler:
+    container_name: handler
+    build:
+      dockerfile: Dockerfile
+      context: '.'
+    volumes:
+      - ./handler:/service
+    ports:
+      - "8080:8080"

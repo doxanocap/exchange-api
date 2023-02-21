@@ -1,13 +1,9 @@
-port: "8080"
+port: "8060"
 
 db:
   host: "localhost"
   port: "5432"
   username: "postgres"
-  dbname: "exchangeapi"
+  dbname: "exchange_api"
   sslmode: "disable"
 
-services:
-  kzt-parser:
-    domains:
-      exchangers: "http://localhost:8002/kzt-parser/exchangers"
