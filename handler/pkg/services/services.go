@@ -26,6 +26,6 @@ type Services struct {
 
 func InitServices(repository *repository.Repository) *Services {
 	return &Services{
-		Parser: InitParserService(repository.Parser),
+		//Parser: InitParserService(repository.Parser),
 	}
 }

@@ -2,18 +2,17 @@ package main
 
 import (
 	"fmt"
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 	"handler/pkg/app"
 	"handler/pkg/handlers"
 	"handler/pkg/repository"
 	"handler/pkg/repository/postgres"
 	"handler/pkg/services"
+
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 )
 
 func main() {
-	fmt.Printf("QWEQWE")
-	return
 	server := app.Server{}
 	app.InitEnvironment()
 
@@ -33,6 +32,7 @@ func main() {
 	repos := repository.InitRepository(db)
 	service := services.InitServices(repos)
 	handler := handlers.InitHandler(service)
+	log.Println("Success")
 
 	if err := server.Run(app.Public.ENV["PORT"], handler.InitRoutes()); err != nil {
 		log.Fatalf("Error whilte running http server: %s", err.Error())

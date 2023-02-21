@@ -1,25 +1,32 @@
 version: '3.9'
 
 services:
+  handler:
+    container_name: handler
+    build:
+      context: /handler
+      dockerfile: Dockerfile
+    environment:
+      - PORT=8080
+      - PSQL_HOST=db
+      - PSQL_USER=postgres
+      - PSQL_PASSWORD=eldoseldos
+      - PSQL_DB=exchange_api
+    depends_on:
+      - handler_db
+    ports:
+      - "8080:8080"
+
   handler_db:
-    container_name: handler_db_postgres
+    container_name: handler_psql
     image: postgres:14-alpine
     environment:
-      POSTGRES_DB: exchange_api,
-      POSTGRES_USER: postgres,
-      POSTGRES_PASSWORD: "eldoseldos"
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: eldoseldos
+      POSTGRES_DB: exchange_api
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d
+      - /handler/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - 5432:5432
     restart: always
 
-  handler:
-    container_name: handler
-    build:
-      dockerfile: Dockerfile
-      context: '.'
-    volumes:
-      - ./handler:/service
-    ports:
-      - "8080:8080"
