@@ -2,18 +2,18 @@ package repository
 
 import (
 	"github.com/jmoiron/sqlx"
-	"handler/pkg/app"
+	"handler/pkg/models"
 )
 
 type Dispatcher interface {
 }
 
 type Parser interface {
-	UpdateEInfoTableConst(eInfo []app.ExchangerInfo) error
-	UpdateEKeysTableConst(eKeys []app.ExchangerKeys) error
-	InsertKZTCurrencies(exchangers []app.ExchangerCurrencies) error
-	GetKeysById(id int) app.ExchangerKeys
-	GetKeysByName(name string) app.ExchangerKeys
+	UpdateEInfoTableConst(eInfo []models.ExchangerInfo) error
+	UpdateEKeysTableConst(eKeys []models.ExchangerKeys) error
+	InsertKZTCurrencies(exchangers []models.ExchangerCurrencies) error
+	GetKeysById(id int) models.ExchangerKeys
+	GetKeysByName(name string) models.ExchangerKeys
 }
 
 type Request interface {

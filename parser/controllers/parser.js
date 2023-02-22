@@ -7,7 +7,7 @@ export const ParseData = async(req,res,next) => {
 
 export const ParseDataByCity = async(req,res,next) => {
     const city = req.params.city
-    console.log(city);
+    console.log("Request to parse data by city: ", city);
     const data = await parser.GetExchangersByCity(city)
     res.status(200).json(data)
 }

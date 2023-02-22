@@ -4,13 +4,16 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"handler/pkg/app"
+	"handler/pkg/models"
 	"handler/pkg/repository"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"strings"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // ParserService Works mainly with requesting and handling data from remote service "kzt-parser"
@@ -23,6 +26,7 @@ func InitParserService(parserModels *repository.ParserModels) *ParserService {
 	parseService := &ParserService{parserModels: *parserModels}
 
 	exchangers, err1 := parseService.GetAllExchangers()
+	log.Println(err1)
 	if err1 != nil {
 		log.Fatalf("FATAL -> Init parser services -> %s", err1.Error())
 	}
@@ -72,10 +76,10 @@ func InitParserService(parserModels *repository.ParserModels) *ParserService {
 //
 
 func (parser *ParserService) InsertKZTCurrencies() error {
-	var eCurrencies []app.ExchangerCurrencies
+	var eCurrencies []models.ExchangerCurrencies
 	exchangers, err := parser.GetAllExchangers()
 	for _, exchanger := range exchangers {
-		eCurrencies = append(eCurrencies, app.ExchangerCurrencies{
+		eCurrencies = append(eCurrencies, models.ExchangerCurrencies{
 			parser.parserModels.GetKeysByName(exchanger.Name).Id,
 			exchanger.USD_BUY, exchanger.USD_SELL,
 			exchanger.EUR_BUY, exchanger.EUR_SELL,
@@ -91,8 +95,8 @@ func (parser *ParserService) InsertKZTCurrencies() error {
 }
 
 // GetAllExchangers Handles parsed data and returns as slice
-func (parser *ParserService) GetAllExchangers() ([]app.ParserResponse, error) {
-	var exchangers []app.ParserResponse
+func (parser *ParserService) GetAllExchangers() ([]models.ParserResponse, error) {
+	var exchangers []models.ParserResponse
 
 	// Hard coding cities, leaving only Astana for a while.
 	var cities = []string{"astana"}
@@ -107,13 +111,19 @@ func (parser *ParserService) GetAllExchangers() ([]app.ParserResponse, error) {
 	return exchangers, nil
 }
 
-func (parser *ParserService) GetExchangersByCity(city string) ([]app.ParserResponse, error) {
-	var exchangers []app.ParserResponse
-	url := fmt.Sprintf(app.Public.ENV["DOMAINS.KZT_PARSER"] + "/exchangers/" + city)
+func (parser *ParserService) GetExchangersByCity(city string) ([]models.ParserResponse, error) {
+	var exchangers []models.ParserResponse
+	domain := os.Getenv("DOMAINS.KZT_PARSER")
+	if domain == "" {
+		domain = app.Public.ENV["DOMAINS.KZT_PARSER"]
+	}
+	url := fmt.Sprintf(domain + "/exchangers/" + city)
 	// Sending request to separate PARSER service,
 	// which parser data about currencies and exchangers from another website
 	body, err := parser.getRequest(url)
+	log.Println(url, body)
 	if err != nil {
+
 		return nil, err
 	}
 
@@ -130,10 +140,10 @@ func (parser *ParserService) GetExchangersByCity(city string) ([]app.ParserRespo
 //
 //
 
-func (parser *ParserService) updateEInfoTableConst(exchangers []app.ParserResponse) error {
-	var eInfo []app.ExchangerInfo
+func (parser *ParserService) updateEInfoTableConst(exchangers []models.ParserResponse) error {
+	var eInfo []models.ExchangerInfo
 	for _, exchanger := range exchangers {
-		info := app.ExchangerInfo{
+		info := models.ExchangerInfo{
 			ExchangerId:  parser.parserModels.GetKeysByName(exchanger.Name).Id,
 			Address:      exchanger.Address,
 			Link:         exchanger.Link,
@@ -147,10 +157,10 @@ func (parser *ParserService) updateEInfoTableConst(exchangers []app.ParserRespon
 	return err
 }
 
-func (parser *ParserService) updateEKeysTableConst(exchangers []app.ParserResponse) error {
-	var eKeys []app.ExchangerKeys
+func (parser *ParserService) updateEKeysTableConst(exchangers []models.ParserResponse) error {
+	var eKeys []models.ExchangerKeys
 	for _, exchanger := range exchangers {
-		eKey := app.ExchangerKeys{
+		eKey := models.ExchangerKeys{
 			Id:   0,
 			City: exchanger.City,
 			Name: exchanger.Name,

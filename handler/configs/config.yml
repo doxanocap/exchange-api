@@ -1,7 +1,6 @@
 port: "8060"
 
-db:
-  host: "localhost"
+pq:
   port: "5432"
   username: "postgres"
   dbname: "exchange_api"

@@ -3,11 +3,11 @@ package postgres
 import (
 	"errors"
 	"fmt"
+	"os"
+
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-	"github.com/sirupsen/logrus"
-	"log"
-	"os"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -26,19 +26,20 @@ type Config struct {
 }
 
 func InitDB(cfg Config) *sqlx.DB {
+	fmt.Println(cfg)
 	db, err := sqlx.Open(
 		"postgres",
 		fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 			cfg.Host, cfg.Port, cfg.Username, cfg.Password, cfg.DBName, cfg.SSLMode))
 
 	if err != nil {
-		logrus.Fatalf("Error in postgres DB init: %s", err.Error())
+		log.Fatalf("Error in postgres DB init: %s", err.Error())
 		return nil
 	}
 
 	err = db.Ping()
 	if err != nil {
-		logrus.Fatalf("Error in postgres DB init: %s", err.Error())
+		log.Fatalf("Error in postgres DB ping: %s", err.Error())
 		return nil
 	}
 	return db

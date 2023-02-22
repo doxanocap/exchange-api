@@ -3,28 +3,28 @@ package repository
 import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
-	"handler/pkg/app"
+	"handler/pkg/models"
 	"handler/pkg/repository/postgres"
 	"time"
 )
 
 type ParserModels struct {
 	psql *sqlx.DB
-	_m1  map[int]app.ExchangerKeys
-	_m2  map[string]app.ExchangerKeys
+	_m1  map[int]models.ExchangerKeys
+	_m2  map[string]models.ExchangerKeys
 }
 
 func NewParserModels(db *sqlx.DB) *ParserModels {
 	return &ParserModels{
 		psql: db,
-		_m1:  map[int]app.ExchangerKeys{},
-		_m2:  map[string]app.ExchangerKeys{},
+		_m1:  map[int]models.ExchangerKeys{},
+		_m2:  map[string]models.ExchangerKeys{},
 	}
 }
 
-func (parser *ParserModels) UpdateEInfoTableConst(eInfoData []app.ExchangerInfo) error {
+func (parser *ParserModels) UpdateEInfoTableConst(eInfoData []models.ExchangerInfo) error {
 	// Initializing to map to establish faster search from array
-	tableDataMap := map[int]app.ExchangerInfo{}
+	tableDataMap := map[int]models.ExchangerInfo{}
 
 	// Selected all existing exchanger_info from SQL table,
 	// to make sure that we will not INSERT duplicate of any exchanger
@@ -40,7 +40,7 @@ func (parser *ParserModels) UpdateEInfoTableConst(eInfoData []app.ExchangerInfo)
 	}
 
 	// Finding out all exchangers that was parsed but not found in SQL table -> newEKeys
-	var newEInfoData []app.ExchangerInfo
+	var newEInfoData []models.ExchangerInfo
 	for _, exchanger := range eInfoData {
 		if _, ok := tableDataMap[exchanger.ExchangerId]; !ok {
 			newEInfoData = append(newEInfoData, exchanger)
@@ -52,9 +52,9 @@ func (parser *ParserModels) UpdateEInfoTableConst(eInfoData []app.ExchangerInfo)
 	return err
 }
 
-func (parser *ParserModels) UpdateEKeysTableConst(eKeys []app.ExchangerKeys) error {
+func (parser *ParserModels) UpdateEKeysTableConst(eKeys []models.ExchangerKeys) error {
 	// Initializing to map to establish faster search from array
-	tableDataMap := map[string]app.ExchangerKeys{}
+	tableDataMap := map[string]models.ExchangerKeys{}
 
 	// Selected all existing EKeys from SQL table,
 	// to make sure that we will not INSERT duplicate of any exchanger
@@ -70,7 +70,7 @@ func (parser *ParserModels) UpdateEKeysTableConst(eKeys []app.ExchangerKeys) err
 	}
 
 	// Finding out all exchangers that was parsed but not found in SQL table -> newEKeys
-	var newEKeys []app.ExchangerKeys
+	var newEKeys []models.ExchangerKeys
 	for _, exchanger := range eKeys {
 		if _, ok := tableDataMap[exchanger.Name]; !ok {
 			newEKeys = append(newEKeys, exchanger)
@@ -92,7 +92,7 @@ func (parser *ParserModels) UpdateEKeysTableConst(eKeys []app.ExchangerKeys) err
 	return nil
 }
 
-func (parser *ParserModels) InsertKZTCurrencies(exchangers []app.ExchangerCurrencies) error {
+func (parser *ParserModels) InsertKZTCurrencies(exchangers []models.ExchangerCurrencies) error {
 
 	query := fmt.Sprintf(`
 		INSERT INTO %s 
@@ -117,11 +117,11 @@ func (parser *ParserModels) InsertKZTCurrencies(exchangers []app.ExchangerCurren
 }
 
 // GetKeysById && GetKeysByName: Methods for interaction with parser,_m1, parser._m2 maps in the higher levels
-func (parser *ParserModels) GetKeysById(id int) app.ExchangerKeys {
+func (parser *ParserModels) GetKeysById(id int) models.ExchangerKeys {
 	return parser._m1[id]
 }
 
-func (parser *ParserModels) GetKeysByName(name string) app.ExchangerKeys {
+func (parser *ParserModels) GetKeysByName(name string) models.ExchangerKeys {
 	return parser._m2[name]
 }
 
@@ -131,7 +131,7 @@ func (parser *ParserModels) GetKeysByName(name string) app.ExchangerKeys {
 //
 //
 
-func (parser *ParserModels) insertEInfoTable(eInfoData []app.ExchangerInfo) error {
+func (parser *ParserModels) insertEInfoTable(eInfoData []models.ExchangerInfo) error {
 	// Inserting data into exchangers_info table
 	if len(eInfoData) == 0 {
 		return nil
@@ -162,11 +162,11 @@ func (parser *ParserModels) insertEInfoTable(eInfoData []app.ExchangerInfo) erro
 	return err
 }
 
-func (parser *ParserModels) insertIntoEKeysTable(eKeys []app.ExchangerKeys) ([]app.ExchangerKeys, error) {
+func (parser *ParserModels) insertIntoEKeysTable(eKeys []models.ExchangerKeys) ([]models.ExchangerKeys, error) {
 	if len(eKeys) == 0 {
 		return nil, nil
 	}
-	var tableEKeys []app.ExchangerKeys
+	var tableEKeys []models.ExchangerKeys
 
 	query := fmt.Sprintf(`
 		INSERT INTO %s (city, name) VALUES`, postgres.ExchangersKeysTable)
@@ -186,8 +186,8 @@ func (parser *ParserModels) insertIntoEKeysTable(eKeys []app.ExchangerKeys) ([]a
 	return tableEKeys, nil
 }
 
-func (parser *ParserModels) selectEInfoData() ([]app.ExchangerInfo, error) {
-	var eInfoData []app.ExchangerInfo
+func (parser *ParserModels) selectEInfoData() ([]models.ExchangerInfo, error) {
+	var eInfoData []models.ExchangerInfo
 	query := fmt.Sprintf("SELECT * FROM %s", postgres.ExchangersInfoTable)
 	err := parser.psql.Select(&eInfoData, query)
 	if err != nil {
@@ -196,8 +196,8 @@ func (parser *ParserModels) selectEInfoData() ([]app.ExchangerInfo, error) {
 	return eInfoData, nil
 }
 
-func (parser *ParserModels) selectEKeysData() ([]app.ExchangerKeys, error) {
-	var eKeys []app.ExchangerKeys
+func (parser *ParserModels) selectEKeysData() ([]models.ExchangerKeys, error) {
+	var eKeys []models.ExchangerKeys
 	query := fmt.Sprintf("SELECT * FROM %s", postgres.ExchangersKeysTable)
 	if err := parser.psql.Select(&eKeys, query); err != nil {
 		return nil, err

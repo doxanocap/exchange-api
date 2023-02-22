@@ -1,4 +1,4 @@
-package app
+package models
 
 type ParserResponse struct {
 	Id           int      `json:"id"`

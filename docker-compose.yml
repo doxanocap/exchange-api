@@ -6,27 +6,53 @@ services:
     build:
       context: /handler
       dockerfile: Dockerfile
-    environment:
-      - PORT=8080
-      - PSQL_HOST=db
-      - PSQL_USER=postgres
-      - PSQL_PASSWORD=eldoseldos
-      - PSQL_DB=exchange_api
     depends_on:
-      - handler_db
-    ports:
+      handler_pq:
+        condition: service_healthy
+      parser: 
+        condition: service_started
+    environment:
+      PORT: 8080
+      POSTGRES_HOST: handler_pq
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: exchange_api
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: eldoseldos
+      POSTGRES_SSL: disable
+      DOMAINS.KZT_PARSER: http://localhost:8050/kzt-parser
+    ports:  
       - "8080:8080"
+      
+  parser:
+    container_name: parser
+    build:
+      context: /parser
+      dockerfile: Dockerfile
+    environment:
+      PORT: 8050
+    ports:
+      - "8050:8050"
+    healthcheck:
+      test: ["curl -f http://localhost:8050/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
-  handler_db:
-    container_name: handler_psql
+  handler_pq:
+    container_name: handler_pq
     image: postgres:14-alpine
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: eldoseldos
       POSTGRES_DB: exchange_api
     volumes:
-      - /handler/init.sql:/docker-entrypoint-initdb.d/init.sql
-    ports:
-      - 5432:5432
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d exchange_api"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     restart: always
 
