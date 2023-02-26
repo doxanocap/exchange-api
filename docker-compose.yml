@@ -11,15 +11,10 @@ services:
         condition: service_healthy
       parser: 
         condition: service_started
+    env_file:
+      - .env
     environment:
       PORT: 8080
-      POSTGRES_HOST: handler_pq
-      POSTGRES_PORT: 5432
-      POSTGRES_DB: exchange_api
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: eldoseldos
-      POSTGRES_SSL: disable
-      DOMAINS.KZT_PARSER: http://localhost:8050/kzt-parser
     ports:  
       - "8080:8080"
       
@@ -33,7 +28,7 @@ services:
     ports:
       - "8050:8050"
     healthcheck:
-      test: ["curl -f http://localhost:8050/health"]
+      test: ["curl -f http://parser:8050/health"]
       interval: 10s
       timeout: 5s
       retries: 5

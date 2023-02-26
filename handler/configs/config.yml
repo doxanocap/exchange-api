@@ -1,8 +1,0 @@
-port: "8060"
-
-pq:
-  port: "5432"
-  username: "postgres"
-  dbname: "exchange_api"
-  sslmode: "disable"
-

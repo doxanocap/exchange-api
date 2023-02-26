@@ -2,66 +2,30 @@ package main
 
 import (
 	"fmt"
-	"handler/pkg/app"
+	log "github.com/sirupsen/logrus"
+	app "handler"
+	"handler/pkg/configs"
 	"handler/pkg/handlers"
 	"handler/pkg/repository"
 	"handler/pkg/repository/postgres"
 	"handler/pkg/services"
-	"os"
-
-	log "github.com/sirupsen/logrus"
 )
 
 func main() {
-	//url := fmt.Sprintf("http://localhost:8050/health")
-	//
-	//resp, err := http.Get(url)
-	//if err != nil {
-	//	log.Error(err)
-	//	return
-	//}
-	//if err == nil {
-	//	resp.Body.Close()
-	//}
-	//
-	//body, err := ioutil.ReadAll(resp.Body)
-	//if err != nil {
-	//	log.Error(err)
-	//	return
-	//}
-	//
-	//log.Println(string(body))
-	//
-	//return
-	//
+	fmt.Printf("\n\n")
+	configs.InitEnvironment()
 	server := app.Server{}
 
-	// dev
-
-	// db := postgres.InitDB(postgres.Config{
-	// 	Host:     app.Public.ENV["POSTGRES_HOST"],
-	// 	Port:     app.Public.ENV["POSTGRES_PORT"],
-	// 	Username: app.Public.ENV["POSTGRES_USER"],
-	// 	DBName:   app.Public.ENV["POSTGRES_DB"],
-	// 	SSLMode:  app.Public.ENV["POSTGRES_SSL"],
-	// 	Password: app.Public.ENV["POSTGRES_PASSWORD"]})
-
-	// prod
-
-	//domain := os.Getenv("DOMAINS.KZT_PARSER")
-
-	app.InitEnvironment()
-
 	db := postgres.InitDB(postgres.Config{
-		Host:     os.Getenv("POSTGRES_HOST"),
-		Port:     os.Getenv("POSTGRES_PORT"),
-		Username: os.Getenv("POSTGRES_USER"),
-		DBName:   os.Getenv("POSTGRES_DB"),
-		SSLMode:  os.Getenv("POSTGRES_SSL"),
-		Password: os.Getenv("POSTGRES_PASSWORD")})
+		Host:     configs.ENV("POSTGRES_HOST"),
+		Port:     configs.ENV("POSTGRES_PORT"),
+		Username: configs.ENV("POSTGRES_USER"),
+		DBName:   configs.ENV("POSTGRES_DB"),
+		SSLMode:  configs.ENV("POSTGRES_SSL"),
+		Password: configs.ENV("POSTGRES_PASSWORD")})
 
 	if err := postgres.Migrations(db); err != nil {
-		fmt.Printf("Migration went successfull:\nMigration file -> handler%s\n", err.Error())
+		fmt.Printf("Migration went successfull: Migration file -> handler%s\n", err.Error())
 		return
 	}
 
@@ -69,7 +33,7 @@ func main() {
 	service := services.InitServices(repos)
 	handler := handlers.InitHandler(service)
 
-	if err := server.Run(app.Public.ENV["PORT"], handler.InitRoutes()); err != nil {
+	if err := server.Run(configs.ENV("PORT"), handler.InitRoutes()); err != nil {
 		log.Fatalf("Error whilte running http server: %s", err.Error())
 	}
 }

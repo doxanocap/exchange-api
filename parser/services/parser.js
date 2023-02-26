@@ -1,6 +1,7 @@
 import * as handler from "./handle.js";
 import {load} from "cheerio";
 
+
 const cities = ["astana","almaty","taldykorgan", "kostanai"]
 
 export const GetExchangers = async () => {
@@ -13,55 +14,25 @@ export const GetExchangers = async () => {
 }
 
 export const GetExchangersByCity = async (city) => {
-    const content = await handler.pageContent(`https://kurs.kz/index.php?mode=${city}`)
-    const $ = load(content)
-
-    const data = []
-
-    $('.punkt-open').each((i, el) => {
-
-        const exchanger = {
-            city: city,
-            name:  $(el).find($('.tab')).text(),
-            link: $(el).find($('.tab')).attr('href'),
-            address: $(el).find($('.address')).text(),
-            special_offer: $(el).find($('.wholesale')).text(),
-            update_time: $(el).find($('.timeC')).text(),
+    const parsed_data = await handler.pageContent(`https://kurs.kz/index.php?mode=${city}`)
+    if (!parsed_data) {
+        return
+    }
+    const response = []
+    for (let punkt of parsed_data) {
+        let exchanger = {
+            id: 0,
+            name: punkt.name,
+            city: punkt.city,
+            address: punkt.address,
+            wholesale: punkt.phone,
+            updated_time: punkt.date,
+            phone_numbers: punkt.phones,
+            USD: punkt.data.USD,
+            EUR: punkt.data.EUR,
+            RUB: punkt.data.RUB,
         }
-
-        const phones = []
-        $(el).find($('.currency')).each((j, ch) => {
-            for (const elem of ch.children) {
-                const title = elem.attribs.title
-                if (title !== undefined) {
-                    let price = $(elem).text()
-
-                    switch (elem.attribs.title) {
-                        case "USD - покупка":
-                            exchanger.USD_BUY = parseFloat(price)
-                        case "USD - продажа": 
-                            exchanger.USD_SELL = parseFloat(price)
-                        case "EUR - покупка": 
-                            exchanger.EUR_BUY = parseFloat(price)    
-                        case "EUR - продажа": 
-                            exchanger.EUR_SELL = parseFloat(price)
-                        case "RUB - покупка": 
-                            exchanger.RUB_BUY = parseFloat(price)
-                        case "RUB - продажа": 
-                            exchanger.RUB_SELL = parseFloat(price)
-                    }
-                   
-                }
-            }
-        })
-
-        $(el).find('.phone').each((j, ch) => {
-            phones.push($(ch).text())
-        });
-
-        exchanger.phone_numbers = phones
-
-        data.push(exchanger)
-    })
-    return data
+        response.push(exchanger)
+    }
+    return response
 }

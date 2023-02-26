@@ -1,4 +1,4 @@
-package app
+package handler
 
 import (
 	"context"
@@ -19,7 +19,7 @@ func (s *Server) Run(port string, handler http.Handler) error {
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 	}
-	fmt.Printf("[GIN-debug]         Listening on port: %s\n", port)
+	fmt.Printf("[GIN-debug]         Listening on port: %s\n\n", port)
 	return s.httpServer.ListenAndServe()
 }
 

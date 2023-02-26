@@ -5,28 +5,35 @@ import (
 	"handler/pkg/models"
 )
 
-type Dispatcher interface {
+type Exchanger interface {
+	SelectExchangersData(params models.ExchangerInfoParams) ([]models.ExchangerData, error)
+	SelectCurrenciesData(params models.CurrenciesDataParams) ([]CurrenciesData, error)
 }
 
 type Parser interface {
-	UpdateEInfoTableConst(eInfo []models.ExchangerInfo) error
-	UpdateEKeysTableConst(eKeys []models.ExchangerKeys) error
-	InsertKZTCurrencies(exchangers []models.ExchangerCurrencies) error
-	GetKeysById(id int) models.ExchangerKeys
-	GetKeysByName(name string) models.ExchangerKeys
-}
+	GetKeysById(id int) ExchangerKeys
+	GetKeysByName(name string) ExchangerKeys
 
-type Request interface {
+	SelectExchangersInfo() ([]ExchangerInfo, error)
+	SelectExchangersKeys() ([]ExchangerKeys, error)
+	SelectExchangersCurrencies() ([]ExchangerCurrencies, error)
+
+	UpdateEInfoTableConst(eInfo []ExchangerInfo) error
+	UpdateEKeysTableConst(eKeys []ExchangerKeys) error
+
+	InsertKZTCurrencies(exchangers []ExchangerCurrencies) error
+	InsertEInfoTable(eInfoData []ExchangerInfo) error
+	InsertIntoEKeysTable(eKeys []ExchangerKeys) ([]ExchangerKeys, error)
 }
 
 type Repository struct {
-	Dispatcher
-	Parser *ParserModels
-	Request
+	Exchanger
+	Parser
 }
 
 func InitRepository(db *sqlx.DB) *Repository {
 	return &Repository{
-		Parser: NewParserModels(db),
+		Exchanger: NewExchangersModels(db),
+		Parser:    NewParserModels(db),
 	}
 }

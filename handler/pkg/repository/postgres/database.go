@@ -26,7 +26,6 @@ type Config struct {
 }
 
 func InitDB(cfg Config) *sqlx.DB {
-	fmt.Println(cfg)
 	db, err := sqlx.Open(
 		"postgres",
 		fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",

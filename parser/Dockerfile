@@ -3,7 +3,10 @@ FROM node:18-alpine
 ENV NODE_ENV=production
 WORKDIR /app
 COPY ["package.json", "package-lock.json","./"]
-RUN npm install --production
+
+RUN npm install 
+
 COPY . .
+
 EXPOSE 8050
-CMD [ "node", "server.js" ]
+CMD ["npm", "run", "start.dev"]
