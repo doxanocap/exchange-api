@@ -1,18 +1,22 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	app "handler"
 	"handler/pkg/configs"
 	"handler/pkg/handlers"
 	"handler/pkg/repository"
 	"handler/pkg/repository/postgres"
 	"handler/pkg/services"
+	"os"
+	"os/signal"
+	"syscall"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {
-	fmt.Printf("\n\n")
 	configs.InitEnvironment()
 	server := app.Server{}
 
@@ -35,5 +39,19 @@ func main() {
 
 	if err := server.Run(configs.ENV("PORT"), handler.InitRoutes()); err != nil {
 		log.Fatalf("Error whilte running http server: %s", err.Error())
+	}
+
+	log.Printf("Handler service started \n")
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+	<-quit
+
+	log.Printf("Handler service shut down\n")
+	if err := server.Shutdown(context.Background()); err != nil {
+		log.Errorf("service shutting down error - %s", err.Error())
+	}
+	if err := db.Close(); err != nil {
+		log.Errorf("handler service: database shutting down error - %s", err.Error())
 	}
 }

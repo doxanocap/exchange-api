@@ -117,6 +117,9 @@ func (parser *ParserModels) UpdateEInfoTableConst(eInfoData []ExchangerInfo) err
 }
 
 func (parser *ParserModels) InsertKZTCurrencies(exchangers []ExchangerCurrencies) error {
+	if len(exchangers) == 0 {
+		return nil
+	}
 	query := fmt.Sprintf(`
 		INSERT INTO %s 
 		(exchanger_id, upload_time, usd_buy, usd_sell, eur_buy, eur_sell, rub_buy, rub_sell)
@@ -125,8 +128,7 @@ func (parser *ParserModels) InsertKZTCurrencies(exchangers []ExchangerCurrencies
 
 	for i, exchanger := range exchangers {
 		query += fmt.Sprintf(`
-			(%d,%d,%f,%f,%f,%f,%f,%f)	
-			`, exchanger.ExchangerId,
+			(%d,%d,%f,%f,%f,%f,%f,%f)`, exchanger.ExchangerId,
 			time.Now().Unix(),
 			exchanger.USD_BUY, exchanger.USD_SELL,
 			exchanger.EUR_BUY, exchanger.EUR_SELL,
@@ -135,7 +137,7 @@ func (parser *ParserModels) InsertKZTCurrencies(exchangers []ExchangerCurrencies
 			query += ";"
 			break
 		}
-		query += ","
+		query += ",\n"
 	}
 
 	res, err := parser.psql.Query(query)

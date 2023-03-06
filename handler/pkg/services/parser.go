@@ -26,11 +26,8 @@ func InitParserService(parserModels repository.Parser) *ParserService {
 	parseService := &ParserService{parserModels: parserModels}
 
 	exchangers, err1 := parseService.ParseAllExchangers()
-
 	if err1 != nil {
-		if err1.Error() != "unmarshal" {
-			log.Fatalf("FATAL -> Init parser services -> %s", err1.Error())
-		}
+		log.Fatalf("FATAL -> Init parser services -> %s", err1.Error())
 	}
 
 	// Initializing parser exchangers_keys tables data.
@@ -47,24 +44,30 @@ func InitParserService(parserModels repository.Parser) *ParserService {
 	// Updates data about exchangers every 12 hours.
 	ticker1 := time.NewTicker(12 * time.Hour)
 	// Parses currencies every 5 minutes and handles data into SQL tables
-	ticker2 := time.NewTicker(10 * time.Second)
-	err := make(chan error, 4)
+	ticker2 := time.NewTicker(5 * time.Second)
+
+	err := make(chan error, 1)
 	go func() {
 		for {
 			select {
-			case newErr := <- err:
+			case newErr := <-err:
 				if newErr != nil {
 					log.Printf("Error in attempt to update const data in exchangers info table: %s", newErr.Error())
 				}
 			case <-ticker1.C:
 				data, err1 := parseService.ParseAllExchangers()
-				err <- err1 
+				err <- err1
 				err <- parseService.updateEKeysTableConst(data)
-				err <- parseService.updateEInfoTableConst(data)				
-				log.Printf("!!!IMPORTANT!!! 12 hours passed. Executing table update.")
+				err <- parseService.updateEInfoTableConst(data)
+				log.Printf("| --- Executed table update --- |")
 			case <-ticker2.C:
-				err <- parseService.insertKZTCurrencies()
-				log.Printf("!!!IMPORTANT!!! Handled currencies data. 10 seconds passed")
+				err1 = parseService.insertKZTCurrencies()
+				if err1 != nil {
+					if err1.Error() != "not parsed" || err1.Error() != "unmarshal" {
+						err <- err1
+					}
+				}
+				log.Printf("| --- Handled currencies data --- |")
 			}
 		}
 	}()
@@ -87,6 +90,7 @@ func (parser *ParserService) ParseAllExchangers() ([]models.ParserResponse, erro
 	for _, city := range cities {
 		res, err := parser.ParseExchangersByCity(city)
 		if err != nil {
+			log.Println("parser error - ", err.Error())
 			return nil, err
 		}
 		exchangers = append(exchangers, res...)
@@ -102,14 +106,11 @@ func (parser *ParserService) ParseExchangersByCity(city string) ([]models.Parser
 	// which parser data about currencies and exchangers from another website
 	body, err := parser.getRequest(url)
 	if err != nil {
-		log.Println("qweqweq:",err)
 		return nil, err
 	}
 
 	// Handling json response body
-
 	if err := json.Unmarshal(body, &exchangers); err != nil {
-		log.Printf("Unable to unmarshal following %s", err.Error())
 		return nil, errors.New("unmarshal")
 	}
 	return exchangers, nil
@@ -159,6 +160,12 @@ func (parser *ParserService) GetExchangersCurrenciesTable() ([]models.ExchangerC
 func (parser *ParserService) insertKZTCurrencies() error {
 	var eCurrencies []repository.ExchangerCurrencies
 	exchangers, err := parser.ParseAllExchangers()
+	if err != nil {
+		return err
+	}
+	if len(exchangers) == 0 {
+		return errors.New("not parsed")
+	}
 	for _, exchanger := range exchangers {
 		eCurrencies = append(eCurrencies, repository.ExchangerCurrencies{
 			parser.parserModels.GetKeysByName(exchanger.Name).Id,
@@ -167,10 +174,6 @@ func (parser *ParserService) insertKZTCurrencies() error {
 			exchanger.EUR[0], exchanger.EUR[1],
 			exchanger.RUB[0], exchanger.RUB[1],
 		})
-	}
-
-	if err != nil {
-		return err
 	}
 	err = parser.parserModels.InsertKZTCurrencies(eCurrencies)
 	return err

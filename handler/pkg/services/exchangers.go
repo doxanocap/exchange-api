@@ -1,6 +1,7 @@
 package services
 
 import (
+	log "github.com/sirupsen/logrus"
 	"handler/pkg/models"
 	"handler/pkg/repository"
 )
@@ -20,6 +21,7 @@ func InitExchangersServices(repo *repository.Repository) *ExchangersService {
 func (exchanger *ExchangersService) GetExchangersData(params models.ExchangerInfoParams) ([]models.ExchangerData, error) {
 	response, err := exchanger.exchangerModels.SelectExchangersData(params)
 	if err != nil {
+		log.Println("err:", err)
 		return nil, err
 	}
 	return response, err

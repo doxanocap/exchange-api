@@ -5,7 +5,7 @@ CREATE TABLE exchangers_keys (
 );
 
 CREATE TABLE exchangers_currencies (
-    exchanger_id INT REFERENCES exchangers_keys(id),
+    exchanger_id INT,
     upload_time BIGINT,
     usd_buy FLOAT,
     usd_sell FLOAT,
@@ -16,13 +16,15 @@ CREATE TABLE exchangers_currencies (
 );
 
 CREATE TABLE exchangers_info (
-    exchanger_id INT REFERENCES exchangers_keys(id),
+    exchanger_id INT,
     address TEXT,
     wholesale TEXT,
     updated_time BIGINT,
     phone_numbers TEXT
 );
 
-CREATE INDEX exchanger_keys_index
+CREATE INDEX exchangers_currencies_exchanger_id_idx
     ON exchangers_currencies (exchanger_id);
-    
+
+CREATE INDEX exchangers_info_exchanger_id_idx
+    ON exchangers_info (exchanger_id);

@@ -3,7 +3,7 @@ package models
 type ExchangerInfoParams struct {
 	Name      string `json:"name"`
 	City      string `json:"city"`
-	Wholesale bool   `json:"wholesale"`
+	Wholesale bool   `json:" "`
 }
 
 type CurrenciesDataParams struct {
@@ -27,7 +27,7 @@ type CurrenciesData struct {
 }
 
 type Currencies struct {
-	UploadTime uint64     `json:"upload_time"`
+	UploadTime uint64     `json:"-"`
 	USD        [2]float32 `json:"USD"`
 	EUR        [2]float32 `json:"EUR"`
 	RUB        [2]float32 `json:"RUB"`

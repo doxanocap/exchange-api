@@ -3,6 +3,7 @@ package repository
 import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
+	log "github.com/sirupsen/logrus"
 	"handler/pkg/models"
 	"handler/pkg/repository/postgres"
 )
@@ -43,14 +44,15 @@ func (exchangers *ExchangersModels) SelectExchangersData(params models.Exchanger
 	if params.Name != "" {
 		query += fmt.Sprintf(" WHERE k.name = '%s'", params.Name)
 	} else if params.City != "" {
-		query += fmt.Sprintf(" WHERE k.city = '%s'", params.Name)
+		query += fmt.Sprintf(" WHERE k.city = '%s'", params.City)
 	}
 
 	if params.Wholesale {
-		query += fmt.Sprintf(" AND LEN(i.wholesale) != 0")
+		query += fmt.Sprintf(" AND LENGTH(i.wholesale) != 0")
 	}
 
 	query += fmt.Sprintf(";")
+	log.Println(query)
 	if err := exchangers.psql.Select(&data, query); err != nil {
 		return nil, err
 	}
@@ -62,9 +64,13 @@ func (exchangers *ExchangersModels) SelectCurrenciesData(params models.Currencie
 	var data []CurrenciesData
 	query := fmt.Sprintf(`
 		SELECT 
-			upload_time AS time,
+			upload_time,
 			avg(usd_buy) as usd_buy,
-			avg(usd_sell) as usd_sell
+			avg(usd_sell) as usd_sell,
+			avg(eur_buy) as eur_buy,
+			avg(eur_sell) as eur_sell,
+			avg(rub_buy) as rub_buy,
+			avg(rub_sell) as rub_sell
 		FROM %s
 			WHERE usd_buy > 0 AND upload_time >= %d AND upload_time <= %d
 		GROUP BY upload_time

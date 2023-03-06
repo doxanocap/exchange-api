@@ -24,13 +24,16 @@ func SetupRoutes() {
 	}))
 
 	auth := r.Group("/auth")
-	auth.POST("/sign-up", controllers.SignUp)
-	auth.POST("/sign-in", controllers.SignIn)
-	auth.GET("/refresh", controllers.RefreshUser)
-	auth.GET("/sign-out", controllers.SignOut)
-
+	{
+		auth.POST("/sign-up", controllers.SignUp)
+		auth.POST("/sign-in", controllers.SignIn)
+		auth.PUT("/refresh", controllers.RefreshUser)
+		auth.GET("/sign-out", controllers.SignOut)
+	}
 	user := r.Group("user")
+
 	user.Use(middlewares.ValidateUserAuth)
+
 	user.GET("/validate", controllers.AccountInformation)
 	r.Run(":" + port)
 }

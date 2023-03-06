@@ -9,7 +9,9 @@ import (
 	
 func main() {
 	ticker := time.NewTicker(1 * time.Second)
-	err := make(chan error, 3)
+	err := make(chan error, 1)
+
+    fmt.Println(time.Now().Unix())
 
 	fmt.Println("start")
     var wg sync.WaitGroup

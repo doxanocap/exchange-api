@@ -1,9 +1,9 @@
 package handlers
 
 import (
+	"api/pkg/models"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"handler/pkg/models"
 )
 
 func (handler *Handler) newErrorResponse(ctx *gin.Context, err models.ErrorResponse) {
@@ -12,5 +12,5 @@ func (handler *Handler) newErrorResponse(ctx *gin.Context, err models.ErrorRespo
 }
 
 func (handler *Handler) healthcheck(ctx *gin.Context) {
-	ctx.JSON(200, gin.H{"message":"handler service is alive"})
+	ctx.JSON(200, gin.H{"message": "handler service is alive"})
 }
