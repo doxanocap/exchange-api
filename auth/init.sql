@@ -1,4 +1,3 @@
-CREATE DATABASE bapi;
 
 CREATE TABLE users (
    id SERIAL PRIMARY KEY,

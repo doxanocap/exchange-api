@@ -15,7 +15,7 @@ type Token struct {
 func InsertTokenToDB(id int, refreshToken string) (Token, Error) {
 	res, err := database.DB.Query(fmt.Sprintf(`
 		INSERT INTO tokens 
-		(id, refreshToken)
+		(token_id, refreshToken)
 		VALUES(%d, '%s')`,
 		id, refreshToken))
 	if err != nil {
@@ -29,7 +29,7 @@ func InsertTokenToDB(id int, refreshToken string) (Token, Error) {
 func FindTokenById(id int) (Token, Error) {
 	res, err := database.DB.Query(fmt.Sprintf(`
 		SELECT * FROM tokens 
-		WHERE id = %d`,
+		WHERE token_id = %d`,
 		id))
 	if err != nil {
 		log.Println("models -> token -> FindTokenById - 1", err)
@@ -68,7 +68,7 @@ func UpdateToken(id int, refreshToken string) Error {
 	res, err := database.DB.Query(fmt.Sprintf(`
 		UPDATE tokens 
 		SET refreshtoken='%s'
-		WHERE id='%d'`,
+		WHERE token_id='%d'`,
 		refreshToken, id))
 	if err != nil {
 		log.Println("models -> token -> UpdateToken -> ", err)

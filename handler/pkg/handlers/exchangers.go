@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 	"handler/pkg/models"
 	"net/http"
 )
@@ -17,14 +18,17 @@ func (handler *Handler) getExchangersData(ctx *gin.Context) {
 	var params models.ExchangerInfoParams
 
 	if err := ctx.BindJSON(&params); err != nil {
+		log.Println("weqwewq ", err)
 		handler.newErrorResponse(ctx, models.ErrorResponse{Status: http.StatusBadRequest, Message: err.Error()})
 		return
 	}
+
 	data, err := handler.services.Exchangers.GetExchangersData(params)
 	if err != nil {
 		handler.newErrorResponse(ctx, models.ErrorResponse{Status: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
+
 	ctx.JSON(http.StatusOK, data)
 }
 

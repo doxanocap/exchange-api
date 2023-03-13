@@ -3,7 +3,7 @@ package models
 type ExchangerInfoParams struct {
 	Name      string `json:"name"`
 	City      string `json:"city"`
-	Wholesale bool   `json:" "`
+	Wholesale bool   `json:"wholesale"`
 }
 
 type CurrenciesDataParams struct {

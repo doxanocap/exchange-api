@@ -1,16 +1,15 @@
 package routes
 
 import (
+	"auth/pkg/configs"
 	"auth/pkg/controllers"
 	"auth/pkg/middlewares"
-	"os"
-
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func SetupRoutes() {
-	port := os.Getenv("PORT")
+	port := configs.ENV("PORT")
 	if port == "" {
 		port = "8080"
 	}
@@ -23,17 +22,22 @@ func SetupRoutes() {
 		AllowCredentials: true,
 	}))
 
+	r.GET("/healthcheck", controllers.Healthcheck)
+
 	auth := r.Group("/auth")
 	{
 		auth.POST("/sign-up", controllers.SignUp)
 		auth.POST("/sign-in", controllers.SignIn)
-		auth.PUT("/refresh", controllers.RefreshUser)
 		auth.GET("/sign-out", controllers.SignOut)
+		auth.GET("/refresh-token", controllers.RefreshUser)
+
+		user := auth.Group("user")
+		{
+			user.POST("/validate", controllers.AccountInformation)
+
+			user.Use(middlewares.ValidateUserAuth)
+		}
 	}
-	user := r.Group("user")
 
-	user.Use(middlewares.ValidateUserAuth)
-
-	user.GET("/validate", controllers.AccountInformation)
 	r.Run(":" + port)
 }

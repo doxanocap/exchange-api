@@ -1,9 +1,10 @@
 package handlers
 
 import (
+	"handler/pkg/services"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"handler/pkg/services"
 )
 
 type Handler struct {
@@ -30,6 +31,7 @@ func (handler *Handler) InitRoutes() *gin.Engine {
 		{
 			parser.GET("/parse", handler.parse)
 			parser.GET("/parse/:city", handler.parseByCity)
+
 			database := parser.Group("/database")
 			{
 				database.GET("/exchanger-info", handler.getEInfo)
@@ -38,10 +40,10 @@ func (handler *Handler) InitRoutes() *gin.Engine {
 			}
 		}
 
-		exchangers := router.Group("/exchangers")
+		data := router.Group("/data")
 		{
-			exchangers.POST("/info", handler.getExchangersData)
-			exchangers.POST("/data", handler.getCurrenciesData)
+			data.POST("/exchangers", handler.getExchangersData)
+			data.POST("/currencies", handler.getCurrenciesData)
 		}
 
 	}

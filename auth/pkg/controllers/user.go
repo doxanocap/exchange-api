@@ -3,8 +3,9 @@ package controllers
 import (
 	"auth/pkg/models"
 	"auth/pkg/services"
-	"github.com/gin-gonic/gin"
 	"log"
+
+	"github.com/gin-gonic/gin"
 )
 
 func SignUp(ctx *gin.Context) {
@@ -24,15 +25,6 @@ func SignUp(ctx *gin.Context) {
 		return
 	}
 
-	ctx.SetCookie(
-		"refreshToken",
-		response.RefreshToken,
-		30*24*60*60*1000,
-		"/",
-		"localhost",
-		false,
-		true)
-
 	ctx.JSON(200, response)
 }
 
@@ -49,22 +41,13 @@ func SignIn(ctx *gin.Context) {
 		return
 	}
 
-	ctx.SetCookie(
-		"refreshToken",
-		response.RefreshToken,
-		30*24*60*60*1000,
-		"/",
-		"localhost",
-		false,
-		true)
-
 	ctx.JSON(response.Status, response)
 }
 
 func SignOut(ctx *gin.Context) {
 	token, err := ctx.Cookie("refreshToken")
 	if err != nil {
-		ctx.JSON(500, models.Error{Status: 500, Message: "Something went wrong: Token <-> Client"})
+		ctx.JSON(500, models.Error{Status: 500, Message: "Something went wrong Token <-> Client: " + err.Error()})
 		return
 	}
 	if token == "" {
@@ -101,7 +84,7 @@ func RefreshUser(ctx *gin.Context) {
 func AccountInformation(ctx *gin.Context) {
 	user, ok := ctx.Get("user")
 	if !ok {
-		ctx.JSON(500, gin.H{"error": "unhandled error"})
+		ctx.JSON(500, gin.H{"Status": "200", "Message": "unhandled auth error"})
 	}
 
 	ctx.JSON(200, user)

@@ -1,44 +1,34 @@
 package main
 
 import (
-	"errors"
-	"fmt"
-	"sync"
-	"time"
+    "fmt"
+    "sync"
+    "time"
 )
-	
+
 func main() {
-	ticker := time.NewTicker(1 * time.Second)
-	err := make(chan error, 1)
+   	var wg sync.WaitGroup
+	ch := make(chan error, 1)
+	go func() {
+		wg.Add(1)
+		fmt.Println("AUTH service shut down started...")
+		for i := 0; true; i++ {
+			if i == 2 {
+				wg.Done()
+				ch <- fmt.Errorf("AUTH service is not shutting down ERROR")
+			}
+			time.Sleep(1 * time.Second)
+		}
+	}()
 
-    fmt.Println(time.Now().Unix())
+	if err := <-ch; err != nil {
+		fmt.Println(err.Error())
+	}
 
-	fmt.Println("start")
-    var wg sync.WaitGroup
-    wg.Add(1)
-
-    go func() {
-        for {
-            select {
-            case err1 := <-err:
-                fmt.Println(err1.Error())
-
-            case <-ticker.C:
-                fmt.Println("tick")
-                err1 := ToDo()
-                err <- err1
-                err <- err1
-                err <- err1
-
-            }
-        }
-    }()
-
-    for {
-
-    }
-}
-
-func ToDo() error {
-	return errors.New("error in todo")
+    for i := 0; true; i++ {
+        
+            fmt.Println("waiting")
+            time.Sleep(time.Second)
+		}
+    wg.Wait()
 }
