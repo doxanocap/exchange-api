@@ -24,13 +24,6 @@ func ENV(key string) string {
 	return _m[key]
 }
 
-//
-//func initConfigs() error {
-//	viper.AddConfigPath("configs")
-//	viper.SetConfigName("config")
-//	return viper.ReadInConfig()
-//}
-
 func initEnvMap() error {
 	err := *new(error)
 	_m, err = godotenv.Read(".env")

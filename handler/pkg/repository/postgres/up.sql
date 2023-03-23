@@ -29,17 +29,3 @@ CREATE INDEX exchangers_currencies_exchanger_id_idx
 CREATE INDEX exchangers_info_exchanger_id_idx
     ON exchangers_info (exchanger_id);
 
-
-CREATE TABLE     (
-   id SERIAL PRIMARY KEY,
-   email VARCHAR(255) NOT NULL,
-   username VARCHAR(255) NOT NULL,
-   is_activated Boolean DEFAULT FALSE,
-   password TEXT NOT NULL
-);
-
-CREATE TABLE tokens (
-    token_id INT REFERENCES users(id),
-    UNIQUE(token_id),
-    refreshToken TEXT NOT NULL
-);

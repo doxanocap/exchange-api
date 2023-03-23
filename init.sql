@@ -29,7 +29,6 @@ CREATE INDEX exchangers_currencies_exchanger_id_idx
 CREATE INDEX exchangers_info_exchanger_id_idx
     ON exchangers_info (exchanger_id);
 
-
 CREATE TABLE users (
    id SERIAL PRIMARY KEY,
    email VARCHAR(255) NOT NULL,
