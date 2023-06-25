@@ -1,18 +1,15 @@
 import express, { json } from 'express';
-
 import cors from "cors";
 import cookieParser from 'cookie-parser';
 import { config } from 'dotenv';
-import * as services from './services/exchanger.js'
+import { router } from './routers/parser.js';
+import { errorHandler } from './middlewares/error_handler.js';
+
 config()
-
-
-import { router } from './routers/data.js';
-import {InitExchangers} from "./services/exchanger.js";
 
 const corsOptions = {
   exposedHeaders: '*',
-  origin: 'http://localhost:3000',
+  origin: '*',
   methods: 'GET, PUT, POST',
   credentials: true,
 }
@@ -22,25 +19,15 @@ const app = express()
 app.use(cookieParser());
 app.use(json());
 app.use(cors(corsOptions))
-
 app.use('/kzt-parser',router)
+app.use(errorHandler)
 
-app.use((err, req, res, next) => {
-  const status = err.status
-  if (status !== undefined) {
-    delete err.status
-    res.status(status).json(err )
-    return
-  }
-  console.log(err);
-  res.status(500).json({error:"Something went wrong"})
+app.get("/health", async(req,res) => {
+  console.log("healthcheck");
+  res.status(200).json({"message":"healthy"})
 })
-
-const port = process.env.apiPort || 8002
-
+const port = process.env.apiPort || 8050
 const server = app.listen(port, async () => {
-  await services.InitExchangers()
-
   console.log(`Example app listening on port ${port}`)
 })
 

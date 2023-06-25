@@ -1,0 +1,3 @@
+endpoints:
+  http://localhost:8050/kzt-parser/exchangers
+  http://localhost:8050/kzt-parser/exchangers/:city  

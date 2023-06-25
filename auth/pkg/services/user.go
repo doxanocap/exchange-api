@@ -2,24 +2,25 @@ package services
 
 import (
 	"auth/pkg/models"
-	"golang.org/x/crypto/bcrypt"
 	"log"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 func CreateUser(email, username, password string) models.AuthResponseModel {
 	hashed, _ := bcrypt.GenerateFromPassword([]byte(password), 14)
 	if _, err := models.FindUserByEmail(email); err.Status == 200 {
-		return models.AuthResponseModel{Status: 400, Message: "User already exists"}
+		return models.AuthResponseModel{Status: 400, Message: "user already exists"}
 	}
 
 	user, err := models.InsertUserToDB(email, username, string(hashed))
-	if err.Status != 200 {
+	if err.Status >= 300 {
 		return models.AuthResponseModel{Status: err.Status, Message: err.Message}
 	}
 
 	tokens := GenerateTokens(user)
 	_, err = models.InsertTokenToDB(user.Id, tokens[1])
-	if err.Status != 200 {
+	if err.Status >= 300 {
 		return models.AuthResponseModel{Status: err.Status, Message: "Invalid request to DB"}
 	}
 

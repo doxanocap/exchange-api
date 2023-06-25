@@ -3,6 +3,8 @@ package middlewares
 import (
 	"auth/pkg/models"
 	"auth/pkg/services"
+	"strings"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,13 +16,17 @@ func ValidateUserAuth(ctx *gin.Context) {
 		return
 	}
 
-	accessToken := auth[0]
+	auth = strings.Split(auth[0], " ")
+	accessToken := auth[1]
 	user, err := services.ValidateAToken(accessToken)
+
 	if err.Status != 200 {
 		ctx.JSON(err.Status, err)
 		ctx.Abort()
 		return
 	}
+	
 	ctx.Set("user", user)
 	ctx.Next()
 }
+

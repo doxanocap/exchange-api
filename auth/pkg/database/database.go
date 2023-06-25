@@ -8,21 +8,21 @@ import (
 
 var DB *sql.DB
 
-const (
-	host     = "db"
-	port     = 5432
-	user     = "postgres"
-	password = "eldoseldos"
-	dbname   = "bapi"
-)
+type Config struct {
+	Host     string
+	Port     string
+	Username string
+	Password string
+	DBName   string
+	SSLMode  string
+}
 
-func Connect() {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+func Connect(cfg Config) {
+	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
 		"password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
-	connection, err := sql.Open("postgres", psqlInfo)
-	DB = connection
-
+		cfg.Host, cfg.Port, cfg.Username, cfg.Password, cfg.DBName)
+	conn, err := sql.Open("postgres", psqlInfo)
+	DB = conn
 	err = DB.Ping()
 	if err != nil {
 		panic(err)

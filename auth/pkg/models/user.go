@@ -24,7 +24,7 @@ func InsertUserToDB(email, username, password string) (User, Error) {
 
 	if err != nil {
 		log.Println("models -> user -> InsertToDb - 1", err)
-		return User{}, Error{Status: 500, Message: "Unhandled user query error"}
+		return User{}, Error{Status: 500, Message: "unhandled query error"}
 	}
 	defer res.Close()
 	return FindUserByEmail(email)
@@ -36,10 +36,9 @@ func FindUserByEmail(email string) (User, Error) {
 		WHERE email='%s'`,
 		email))
 	if err != nil {
-		log.Println("models -> admin -> FindByEmail")
-		return User{}, Error{Status: 500, Message: "Unhandled user query error"}
+		log.Println("models -> admin -> FindByEmail ->", err.Error())
+		return User{}, Error{Status: 500, Message: "aurh user query error"}
 	}
-	defer res.Close()
 	return ParseUserFromQuery(res)
 }
 
@@ -50,24 +49,29 @@ func FindUserById(id int) (User, Error) {
 		id))
 	if err != nil {
 		log.Println("models -> admin -> FindByEmail")
-		return User{}, Error{Status: 500, Message: "Unhandled user query error"}
+		return User{}, Error{Status: 500, Message: "unhandled user query error"}
 	}
 	defer res.Close()
 	return ParseUserFromQuery(res)
 }
 
 func ParseUserFromQuery(res *sql.Rows) (User, Error) {
+	defer res.Close()
+	
 	var user User
 	for res.Next() {
 		err := res.Scan(&user.Id, &user.Email, &user.Username, &user.IsActivated, &user.Password)
 		if err != nil {
 			log.Println("models -> user -> parseFromQuery -> ", err)
-			return User{}, Error{Status: 500, Message: "Unhandled user parse Error"}
+			return User{}, Error{Status: 500, Message: "unhandled user parse error"}
 		}
 	}
+
 	if user.Id == 0 || user.Email == "" || string(user.Password) == "" {
 		log.Println("models -> user -> parseFromQuery -> ", "USER not found")
-		return User{}, Error{Status: 401, Message: "User not found"}
+		return User{}, Error{Status: 401, Message: "user not found"}
 	}
 	return user, Error{Status: 200, Message: ""}
 }
+
+

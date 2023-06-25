@@ -1,46 +1,53 @@
 package router
 
 import (
-	"api/pkg/controllers"
-	"os"
-
+	"api/pkg/services"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRoutes() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-	router := gin.Default()
+type Router struct {
+	services *services.Services
+}
 
-	router.Use(
-		cors.New(
-			cors.Config{
-				AllowOrigins:     []string{"http://localhost:3000"},
-				AllowMethods:     []string{"POST", "GET", "PATCH", "PUT", "DELETE"},
-				AllowHeaders:     []string{"Content-Type", "Accept", "Accept-Encoding", "Authorization", "X-CSRF-Token"},
-				ExposeHeaders:    []string{"Authorization"},
-				AllowCredentials: true,
-			}))
+func InitRouter(services *services.Services) *Router {
+	return &Router{services: services}
+}
 
-	auth := router.Group("/auth")
+func (router *Router) InitRoutes() *gin.Engine {
+	r := gin.Default()
+
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowMethods:     []string{"POST", "GET", "PATCH", "PUT", "DELETE"},
+		AllowHeaders:     []string{"Content-Type", "Accept", "Accept-Encoding", "Authorization", "X-CSRF-Token"},
+		ExposeHeaders:    []string{"Authorization"},
+		AllowCredentials: true,
+	}))
+
+	r.GET("/healthcheck", router.healthcheck)
 	{
-		auth.POST("/sign-in", controllers.SingIn)
-		auth.POST("/sign-in", controllers.SignUp)
-		auth.GET("/sign-out", controllers.SignOut)
-		auth.GET("/refresh", controllers.Refresh)
-	}
-
-	api := router.Group("/api")
-	{
-		api.Use(controllers.ValidateUser)
-		data := api.Group("/data")
+		api := r.Group("/api")
 		{
-			data.GET("/all", controllers.GetAllData)
+			auth := api.Group("/auth")
+			{
+				auth.POST("/sign-in", router.SignIn)
+				auth.POST("/sign-up", router.SignUp)
+				auth.GET("/sign-out", router.SignOut)
+				auth.GET("/refresh-token", router.RefreshTokens)
+			}
+
+			api.Use(router.UserValidation)
+			// service called router
+			handler := api.Group("/handler")
+			{
+				data := handler.Group("/data")
+				{
+					data.POST("/exchangers", router.ExchangersData)
+					data.POST("/currencies", router.CurrenciesData)
+				}
+			}
 		}
 	}
-
-	router.Run(":" + port)
+	return r
 }

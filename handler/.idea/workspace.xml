@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="bc94e0af-c221-4f90-8da2-806a715fcd28" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../webchat/pkg/handlers/chat.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../webchat/pkg/handlers/client.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../webchat/pkg/handlers/pool.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../webchat/pkg/repository/chat.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../webchat/pkg/repository/client.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../webchat/pkg/repository/models/chat.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../webchat/pkg/repository/models/client.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../webchat/pkg/repository/models/response.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../webchat/pkg/repository/pool.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../webchat/pkg/services/chat.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../webchat/pkg/services/client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/configs/env.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/configs/env.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/repository/postgres/up.sql" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/repository/postgres/up.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../init.sql" beforeDir="false" afterPath="$PROJECT_DIR$/../init.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../messanger/.env" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../messanger/Dockerfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../messanger/cmd/main.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../messanger/pkg/controllers/authController.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../messanger/pkg/database/connection.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../messanger/pkg/models/struct.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../messanger/pkg/routes/routes.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../messanger/pkg/websocket/client.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../messanger/pkg/websocket/pool.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../messanger/pkg/websocket/showUser.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../messanger/pkg/websocket/websocket.go" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="GOROOT" url="file://$PROJECT_DIR$/../../../../../../../../Program Files/Go" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2NN3WNTGedHRN9suVoDsRdIcEeJ" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.go.formatter.settings.were.checked": "true",
+    "RunOnceActivity.go.migrated.go.modules.settings": "true",
+    "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
+    "RunOnceActivity.go.watchers.conflict.with.on.save.actions.check.performed": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "go.import.settings.migrated": "true",
+    "go.sdk.automatically.set": "true",
+    "last_opened_file_path": "C:/Users/eldos/go/src/github.com/doxanocap/exchange-api/webchat",
+    "nodejs_package_manager_path": "npm"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VgoProject">
+    <settings-migrated>true</settings-migrated>
+  </component>
+</project>

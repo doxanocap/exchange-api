@@ -1,31 +1,32 @@
 package services
 
 import (
-	"handler/pkg/app"
+	"handler/pkg/models"
 	"handler/pkg/repository"
 )
 
-type Dispatcher interface {
-	Data() app.Exchanger
+type Exchangers interface {
+	GetExchangersData(params models.ExchangerInfoParams) ([]models.ExchangerData, error)
+	GetCurrenciesData(params models.CurrenciesDataParams) ([]models.CurrenciesData, error)
 }
 
 type Parser interface {
-	InsertKZTCurrencies() error
-	GetAllExchangers() ([]app.Exchanger, error)
-	GetExchangersByCity(city string) ([]app.Exchanger, error)
-}
+	ParseAllExchangers() ([]models.ParserResponse, error)
+	ParseExchangersByCity(city string) ([]models.ParserResponse, error)
 
-type Request interface {
+	GetExchangersKeysTable() ([]repository.ExchangerKeys, error)
+	GetExchangersInfoTable() ([]repository.ExchangerInfo, error)
+	GetExchangersCurrenciesTable() ([]models.ExchangerCurrenciesResponse, error)
 }
 
 type Services struct {
-	Dispatcher
+	Exchangers
 	Parser
-	Request
 }
 
 func InitServices(repository *repository.Repository) *Services {
 	return &Services{
-		Parser: InitParserService(repository.Parser),
+		Exchangers: InitExchangersServices(repository),
+		Parser:     InitParserService(repository.Parser),
 	}
 }
